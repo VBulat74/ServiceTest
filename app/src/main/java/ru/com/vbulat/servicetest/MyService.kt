@@ -16,25 +16,28 @@ class MyService : Service() {
     val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate() {
-        super.onCreate()
         log("onCreate")
+        super.onCreate()
     }
 
     override fun onDestroy() {
+        log("onDestroy")
         super.onDestroy()
         coroutineScope.cancel()
-        log("onDestroy")
     }
 
     override fun onStartCommand(intent : Intent?, flags : Int, startId : Int) : Int {
         log("onStartCommand")
+
+        val start = intent?.getIntExtra(EXTRA_START, 0) ?: 0
+
         coroutineScope.launch {
-            for (i in 0..100){
+            for (i in start .. start + 100) {
                 delay(1000)
                 log("Timer: $i")
             }
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_REDELIVER_INTENT
     }
 
     private fun log(message : String) {
@@ -45,10 +48,14 @@ class MyService : Service() {
         TODO("Not jet implemented")
     }
 
-    companion object{
-        fun newIntent(context : Context) : Intent {
+    companion object {
 
-            return Intent(context, MyService::class.java)
+        private const val EXTRA_START = "start"
+
+        fun newIntent(context : Context, start : Int) : Intent {
+            return Intent(context, MyService::class.java).apply {
+                putExtra(EXTRA_START, start)
+            }
         }
     }
 }
