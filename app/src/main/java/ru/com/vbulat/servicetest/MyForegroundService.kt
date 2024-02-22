@@ -67,10 +67,11 @@ class MyForegroundService : Service() {
         log("onStartCommand")
 
         coroutineScope.launch {
-            for (i in 0 .. 100) {
+            for (i in 0 .. 10) {
                 delay(1000)
                 log("Timer: $i")
             }
+            stopSelf()
         }
         return START_STICKY
     }
