@@ -28,7 +28,7 @@ class MyJobService : JobService() {
         log("onStartCommand")
 
         coroutineScope.launch {
-            for (i in 0 ..  10) {
+            for (i in 0 ..  100) {
                 delay(1000)
                 log("Timer: $i")
             }
@@ -43,6 +43,10 @@ class MyJobService : JobService() {
     }
 
     private fun log(message : String) {
-        Log.d("SERVICE.TAG", "MyService: $message")
+        Log.d("SERVICE.TAG", "MyJobService: $message")
+    }
+
+    companion object{
+        const val JOB_ID = 101
     }
 }
