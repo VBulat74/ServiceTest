@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -19,6 +20,8 @@ import kotlinx.coroutines.launch
 class MyForegroundService : Service() {
 
     val coroutineScope = CoroutineScope(Dispatchers.Main)
+
+    var onProgressChanged : ((Int) -> Unit)? = null
 
     private val notificationManager by lazy {
         getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -78,6 +81,7 @@ class MyForegroundService : Service() {
                     .setProgress(100, i, false)
                     .build()
                 notificationManager.notify(NOTIFICATION_ID, notification)
+                onProgressChanged?.invoke(i)
                 log("Timer: $i")
             }
             stopSelf()
@@ -89,8 +93,13 @@ class MyForegroundService : Service() {
         Log.d("SERVICE.TAG", "MyForegroundService: $message")
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        TODO("Not jet implemented")
+    override fun onBind(p0: Intent?): IBinder {
+        return LocalBinder()
+    }
+
+    inner class LocalBinder : Binder() {
+
+        fun getService ()=this@MyForegroundService
     }
 
     companion object {
